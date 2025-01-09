@@ -11,7 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0939F4582D2F404600114B6D /* Dancefloor Saver.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dancefloor Saver.saver"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0939F4582D2F404600114B6D /* DancefloorSaver.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DancefloorSaver.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebScreenSaverView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -29,7 +29,7 @@
 		0939F44E2D2F404600114B6D = {
 			isa = PBXGroup;
 			children = (
-				0939F45A2D2F404600114B6D /* Dancefloor Saver */,
+				0939F45A2D2F404600114B6D /* DancefloorSaver */,
 				0939F4592D2F404600114B6D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -37,17 +37,17 @@
 		0939F4592D2F404600114B6D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0939F4582D2F404600114B6D /* Dancefloor Saver.saver */,
+				0939F4582D2F404600114B6D /* DancefloorSaver.saver */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0939F45A2D2F404600114B6D /* Dancefloor Saver */ = {
+		0939F45A2D2F404600114B6D /* DancefloorSaver */ = {
 			isa = PBXGroup;
 			children = (
 				0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */,
 			);
-			path = "Dancefloor Saver";
+			path = DancefloorSaver;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -63,9 +63,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		0939F4572D2F404600114B6D /* Dancefloor Saver */ = {
+		0939F4572D2F404600114B6D /* DancefloorSaver */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0939F4612D2F404600114B6D /* Build configuration list for PBXNativeTarget "Dancefloor Saver" */;
+			buildConfigurationList = 0939F4612D2F404600114B6D /* Build configuration list for PBXNativeTarget "DancefloorSaver" */;
 			buildPhases = (
 				0939F4532D2F404600114B6D /* Headers */,
 				0939F4542D2F404600114B6D /* Sources */,
@@ -76,9 +76,9 @@
 			);
 			dependencies = (
 			);
-			name = "Dancefloor Saver";
+			name = DancefloorSaver;
 			productName = "Dancefloor Saver";
-			productReference = 0939F4582D2F404600114B6D /* Dancefloor Saver.saver */;
+			productReference = 0939F4582D2F404600114B6D /* DancefloorSaver.saver */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -96,7 +96,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0939F4522D2F404600114B6D /* Build configuration list for PBXProject "Dancefloor Saver" */;
+			buildConfigurationList = 0939F4522D2F404600114B6D /* Build configuration list for PBXProject "DancefloorSaver" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -109,7 +109,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0939F4572D2F404600114B6D /* Dancefloor Saver */,
+				0939F4572D2F404600114B6D /* DancefloorSaver */,
 			);
 		};
 /* End PBXProject section */
@@ -297,7 +297,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0939F4522D2F404600114B6D /* Build configuration list for PBXProject "Dancefloor Saver" */ = {
+		0939F4522D2F404600114B6D /* Build configuration list for PBXProject "DancefloorSaver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0939F45F2D2F404600114B6D /* Debug */,
@@ -306,7 +306,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0939F4612D2F404600114B6D /* Build configuration list for PBXNativeTarget "Dancefloor Saver" */ = {
+		0939F4612D2F404600114B6D /* Build configuration list for PBXNativeTarget "DancefloorSaver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0939F4622D2F404600114B6D /* Debug */,
