@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		0939F4652D2F48F300114B6D /* WebScreenSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */; };
+		0939F4682D2F54BF00114B6D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4672D2F54BF00114B6D /* index.html */; };
+		0939F46A2D2F574C00114B6D /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4692D2F574C00114B6D /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0939F4582D2F404600114B6D /* DancefloorSaver.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DancefloorSaver.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebScreenSaverView.swift; sourceTree = "<group>"; };
+		0939F4672D2F54BF00114B6D /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		0939F4692D2F574C00114B6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,9 +49,19 @@
 		0939F45A2D2F404600114B6D /* DancefloorSaver */ = {
 			isa = PBXGroup;
 			children = (
+				0939F4662D2F548600114B6D /* WebContent */,
 				0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */,
+				0939F4692D2F574C00114B6D /* Info.plist */,
 			);
 			path = DancefloorSaver;
+			sourceTree = "<group>";
+		};
+		0939F4662D2F548600114B6D /* WebContent */ = {
+			isa = PBXGroup;
+			children = (
+				0939F4672D2F54BF00114B6D /* index.html */,
+			);
+			path = WebContent;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,6 +133,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0939F46A2D2F574C00114B6D /* Info.plist in Resources */,
+				0939F4682D2F54BF00114B6D /* index.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,7 +275,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DancefloorSaver/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSPrincipalClass = Dancefloor_SaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
@@ -281,7 +299,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DancefloorSaver/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSPrincipalClass = Dancefloor_SaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";

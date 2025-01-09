@@ -35,10 +35,7 @@ xcodebuild -project ./xcode/DancefloorSaver.xcodeproj \
 printf ' Done\n'
 
 printf 'Installing %s...'
-# Find the .saver file
-SAVER_FILE=$(find "$BUILD_DIR" -iname "*.saver")
-# Copy to Screen Savers directory
-cp -pr "$SAVER_FILE" "${HOME}/Library/Screen Savers"
-# Keep a copy in build directory
-cp -pr "$SAVER_FILE" "$BUILD_DIR/"
+
+cp -pr "$(find "$BUILD_DIR" -iname "*.saver")" "${HOME}/Library/Screen Savers"
+
 printf ' Done\n'
