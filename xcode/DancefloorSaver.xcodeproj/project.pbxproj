@@ -10,8 +10,8 @@
 		0939F4652D2F48F300114B6D /* WebScreenSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */; };
 		0939F4682D2F54BF00114B6D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4672D2F54BF00114B6D /* index.html */; };
 		0939F46A2D2F574C00114B6D /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4692D2F574C00114B6D /* Info.plist */; };
-		0939F46E2D2F6B9700114B6D /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */; };
 		0939F4732D2F6CC200114B6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F4722D2F6CC200114B6D /* WebKit.framework */; };
+		0939F4932D31AB9B00114B6D /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,8 +29,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0939F4932D31AB9B00114B6D /* ScreenSaver.framework in Frameworks */,
 				0939F4732D2F6CC200114B6D /* WebKit.framework in Frameworks */,
-				0939F46E2D2F6B9700114B6D /* ScreenSaver.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

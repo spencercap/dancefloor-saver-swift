@@ -8,7 +8,7 @@
 import ScreenSaver
 import WebKit
 
-@objc(WebScreenSaverView)
+//@objc(WebScreenSaverView)
 class WebScreenSaverView: ScreenSaverView {
     var webView: WKWebView!
     
@@ -36,13 +36,14 @@ class WebScreenSaverView: ScreenSaverView {
         addSubview(webView)
         
         // Add this debug content to test if WebView is working
-        webView.loadHTMLString("<html><body style='background: green;'><h1>bewm!</h1></body></html>", baseURL: nil)
+        // webView.loadHTMLString("<html><body style='background: green;'><h1>bewm!</h1></body></html>", baseURL: nil)
         
-        // Comment out your existing URL loading temporarily
-        /*if let htmlPath = Bundle(for: type(of: self)).path(forResource: "index", ofType: "html", inDirectory: "WebContent") {
-            let url = URL(fileURLWithPath: htmlPath)
-            webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
-        }*/
+        // from HTML file
+        if let htmlPath = Bundle(for: type(of: self)).path(forResource: "index", ofType: "html") {
+           let url = URL(fileURLWithPath: htmlPath)
+           webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+        }
+        
     }
     
     required init?(coder: NSCoder) {
