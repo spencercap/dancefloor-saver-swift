@@ -10,6 +10,8 @@
 		0939F4652D2F48F300114B6D /* WebScreenSaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */; };
 		0939F4682D2F54BF00114B6D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4672D2F54BF00114B6D /* index.html */; };
 		0939F46A2D2F574C00114B6D /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4692D2F574C00114B6D /* Info.plist */; };
+		0939F46E2D2F6B9700114B6D /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */; };
+		0939F4732D2F6CC200114B6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F4722D2F6CC200114B6D /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,6 +19,9 @@
 		0939F4642D2F48F300114B6D /* WebScreenSaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebScreenSaverView.swift; sourceTree = "<group>"; };
 		0939F4672D2F54BF00114B6D /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		0939F4692D2F574C00114B6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = System/Library/Frameworks/ScreenSaver.framework; sourceTree = SDKROOT; };
+		0939F4722D2F6CC200114B6D /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		0939F4742D2F6CC700114B6D /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,6 +29,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0939F4732D2F6CC200114B6D /* WebKit.framework in Frameworks */,
+				0939F46E2D2F6B9700114B6D /* ScreenSaver.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -35,6 +42,7 @@
 			children = (
 				0939F45A2D2F404600114B6D /* DancefloorSaver */,
 				0939F4592D2F404600114B6D /* Products */,
+				0939F46B2D2F6B2C00114B6D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,6 +70,16 @@
 				0939F4672D2F54BF00114B6D /* index.html */,
 			);
 			path = WebContent;
+			sourceTree = "<group>";
+		};
+		0939F46B2D2F6B2C00114B6D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0939F4742D2F6CC700114B6D /* libswiftWebKit.tbd */,
+				0939F4722D2F6CC200114B6D /* WebKit.framework */,
+				0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,18 +289,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				ENABLE_HARDENED_RUNTIME = NO;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DancefloorSaver/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPrincipalClass = Dancefloor_SaverView;
+				INFOPLIST_KEY_NSPrincipalClass = DancefloorSaver.WebScreenSaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.spac3.Dancefloor-Saver";
+				PRODUCT_BUNDLE_IDENTIFIER = com.spac3.DancefloorSaver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -295,18 +315,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				ENABLE_HARDENED_RUNTIME = NO;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DancefloorSaver/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPrincipalClass = Dancefloor_SaverView;
+				INFOPLIST_KEY_NSPrincipalClass = DancefloorSaver.WebScreenSaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.spac3.Dancefloor-Saver";
+				PRODUCT_BUNDLE_IDENTIFIER = com.spac3.DancefloorSaver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

@@ -31,7 +31,8 @@ xcodebuild -project ./xcode/DancefloorSaver.xcodeproj \
  -configuration Release clean archive \
  -archivePath "$BUILD_DIR/build.xcarchive" \
  CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=YES \
- SWIFT_VERSION=5.0 > "$BUILD_DIR/build.log"
+ SWIFT_VERSION=5.0 \
+ OTHER_LDFLAGS="-framework ScreenSaver" > "$BUILD_DIR/build.log" 
 printf ' Done\n'
 
 printf 'Installing %s...'
