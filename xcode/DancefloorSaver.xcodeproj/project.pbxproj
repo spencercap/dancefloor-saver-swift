@@ -12,6 +12,9 @@
 		0939F46A2D2F574C00114B6D /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0939F4692D2F574C00114B6D /* Info.plist */; };
 		0939F4732D2F6CC200114B6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F4722D2F6CC200114B6D /* WebKit.framework */; };
 		0939F4932D31AB9B00114B6D /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */; };
+		09DB218D2D37E4D80065CC25 /* index.js in Resources */ = {isa = PBXBuildFile; fileRef = 09DB218C2D37E4D80065CC25 /* index.js */; };
+		09DB218F2D37E5390065CC25 /* dat.gui@0.7.9-esm.js in Resources */ = {isa = PBXBuildFile; fileRef = 09DB218E2D37E5390065CC25 /* dat.gui@0.7.9-esm.js */; };
+		09DB21912D37E55D0065CC25 /* three@0.169.0-esm.js in Resources */ = {isa = PBXBuildFile; fileRef = 09DB21902D37E55D0065CC25 /* three@0.169.0-esm.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +25,9 @@
 		0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = System/Library/Frameworks/ScreenSaver.framework; sourceTree = SDKROOT; };
 		0939F4722D2F6CC200114B6D /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		0939F4742D2F6CC700114B6D /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
+		09DB218C2D37E4D80065CC25 /* index.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
+		09DB218E2D37E5390065CC25 /* dat.gui@0.7.9-esm.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "dat.gui@0.7.9-esm.js"; sourceTree = "<group>"; };
+		09DB21902D37E55D0065CC25 /* three@0.169.0-esm.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "three@0.169.0-esm.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +73,7 @@
 		0939F4662D2F548600114B6D /* WebContent */ = {
 			isa = PBXGroup;
 			children = (
+				09DB218B2D37E4BE0065CC25 /* assets */,
 				0939F4672D2F54BF00114B6D /* index.html */,
 			);
 			path = WebContent;
@@ -80,6 +87,16 @@
 				0939F46C2D2F6B2C00114B6D /* ScreenSaver.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		09DB218B2D37E4BE0065CC25 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				09DB218C2D37E4D80065CC25 /* index.js */,
+				09DB218E2D37E5390065CC25 /* dat.gui@0.7.9-esm.js */,
+				09DB21902D37E55D0065CC25 /* three@0.169.0-esm.js */,
+			);
+			path = assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +168,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09DB21912D37E55D0065CC25 /* three@0.169.0-esm.js in Resources */,
+				09DB218D2D37E4D80065CC25 /* index.js in Resources */,
+				09DB218F2D37E5390065CC25 /* dat.gui@0.7.9-esm.js in Resources */,
 				0939F46A2D2F574C00114B6D /* Info.plist in Resources */,
 				0939F4682D2F54BF00114B6D /* index.html in Resources */,
 			);

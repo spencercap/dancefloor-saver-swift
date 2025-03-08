@@ -42,8 +42,10 @@ class WebScreenSaverView: ScreenSaverView {
         if let htmlPath = Bundle(for: type(of: self)).path(forResource: "index", ofType: "html") {
            let url = URL(fileURLWithPath: htmlPath)
            webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+        } else {
+            NSLog("Failed to find index.html")
+            webView.loadHTMLString("<html><body style='background: red;'><h2>couldnt find local HTML</h2></body></html>", baseURL: nil)
         }
-        
     }
     
     required init?(coder: NSCoder) {
@@ -71,7 +73,14 @@ class WebScreenSaverView: ScreenSaverView {
     }
     
     override func animateOneFrame() {
-        NSLog("animateOneFrame called")
+        // Remove or comment out this log as it will flood your console
+        // NSLog("animateOneFrame called")
+        
+        // Instead of just calling setNeedsDisplay, we need to ensure the WebView
+        // continues to process its JavaScript and render updates
+        webView.evaluateJavaScript("1+1", completionHandler: nil)
+        
+        // This is still needed to refresh the screen saver view itself
         setNeedsDisplay(bounds)
     }
 }
