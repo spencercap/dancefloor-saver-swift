@@ -21,7 +21,7 @@ mv /tmp/DancefloorSaver.saver ~/Library/Screen\ Savers/
 
 ## uninstalling 
 
-1. open screen savers directory `/Users/[NAME]/Library/Screen\ Savers`
+1. open screen savers directory `~/Library/Screen\ Savers`
 1. delete `DancefloorSaver.saver`
 
 
