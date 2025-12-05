@@ -15,6 +15,12 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     // Add this property at the class level
     private var startTime: Date?
     
+    // FPS tracking for Swift layer
+    private var swiftFrameCount: Int = 0
+    private var swiftLastFPSTime: Date = Date()
+    private var swiftFPS: Double = 0
+    private var swiftFPSLabel: NSTextField!
+    
     override init?(frame: NSRect, isPreview: Bool) {
         super.init(frame: frame, isPreview: isPreview)
         print("WebScreenSaverView init")  // This won't show in Console.app
@@ -23,7 +29,7 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         NSLog("WebScreenSaverView initialized with frame: \(frame)")
         
         // Basic setup
-        animationTimeInterval = 1/30.0
+        animationTimeInterval = 1/60.0
 
         // more
         wantsLayer = true
@@ -43,9 +49,26 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         webView = WKWebView(frame: self.bounds, configuration: config)
         webView.autoresizingMask = [.width, .height]
         webView.wantsLayer = true
-        webView.layer?.backgroundColor = NSColor.white.cgColor
+        webView.layer?.backgroundColor = NSColor.black.cgColor
         webView.navigationDelegate = self
         addSubview(webView)
+        
+        // Create Swift FPS label (top-right corner)
+        swiftFPSLabel = NSTextField(labelWithString: "Swift FPS: --")
+        swiftFPSLabel.font = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
+        swiftFPSLabel.textColor = NSColor.cyan
+        swiftFPSLabel.backgroundColor = NSColor(white: 0, alpha: 0.7)
+        swiftFPSLabel.drawsBackground = true
+        swiftFPSLabel.isBezeled = false
+        swiftFPSLabel.isEditable = false
+        swiftFPSLabel.wantsLayer = true
+        swiftFPSLabel.layer?.zPosition = 1000  // Ensure it's on top
+        swiftFPSLabel.sizeToFit()
+        swiftFPSLabel.frame = NSRect(x: frame.width - 150,
+                                      y: frame.height - 30,
+                                      width: 140,
+                                      height: 20)
+        addSubview(swiftFPSLabel)
         
         // Add this debug content to test if WebView is working
         // webView.loadHTMLString("<html><body style='background: green;'><h1>bewm!</h1></body></html>", baseURL: nil)
@@ -64,11 +87,25 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         super.init(coder: coder)
     }
     
+    override func layout() {
+        super.layout()
+        // Reposition FPS label when view resizes (e.g., going fullscreen)
+        if swiftFPSLabel != nil {
+            swiftFPSLabel.frame = NSRect(x: bounds.width - 150,
+                                          y: bounds.height - 30,
+                                          width: 140,
+                                          height: 20)
+            // Bring label to front by re-adding it
+            swiftFPSLabel.removeFromSuperview()
+            addSubview(swiftFPSLabel, positioned: .above, relativeTo: webView)
+        }
+    }
+    
     override func draw(_ rect: NSRect) {
         NSLog("draw called")
         
         // Draw a simple background
-        NSColor.blue.setFill()
+        NSColor.black.setFill()
         bounds.fill()
 
         webView.setNeedsDisplay(rect)
@@ -87,6 +124,17 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     }
     
     override func animateOneFrame() {
+        // FPS tracking for Swift layer
+        swiftFrameCount += 1
+        let now = Date()
+        let elapsed = now.timeIntervalSince(swiftLastFPSTime)
+        if elapsed >= 1.0 {
+            swiftFPS = Double(swiftFrameCount) / elapsed
+            swiftFPSLabel.stringValue = String(format: "Swift FPS: %.1f", swiftFPS)
+            swiftFrameCount = 0
+            swiftLastFPSTime = now
+        }
+        
         // Call the exposed tick function directly - this renders one frame of the Three.js scene
         // The tick function is exposed on window in index.html and handles all animation logic
         webView.evaluateJavaScript("if (typeof window.tick === 'function') { window.tick(); }", completionHandler: nil)
@@ -106,16 +154,17 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     }
     
     // Add these delegate methods
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NSLog("WebView finished loading content")
-        // Inject a helper function that your web content can use
-        webView.evaluateJavaScript("""
-            window.screenSaverTick = function(count) {
-                // Your web content can implement this function to respond to animation frames
-                // console.log('Screen saver tick: ' + count);
-            };
-        """, completionHandler: nil)
-    }
+    // func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    //     NSLog("WebView finished loading content")
+    //     // Inject a helper function that your web content can use
+    //     webView.evaluateJavaScript("""
+    //     window.screenSaverTick(); /*
+    //         window.screenSaverTick = function(count) {
+    //             // Your web content can implement this function to respond to animation frames
+    //             // console.log('Screen saver tick: ' + count);
+    //         }; */
+    //     """, completionHandler: nil)
+    // }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         NSLog("WebView failed to load: \(error.localizedDescription)")

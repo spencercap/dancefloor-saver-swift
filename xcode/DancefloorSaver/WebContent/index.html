@@ -36,47 +36,6 @@
      <script type="module" crossorigin src="./index.js"></script>
   </head>
   <body>
-      <h1>gare</h1>
     <div id="app"></div>
-
-    <script>
-      let pEl = document.createElement("p");
-      pEl.innerHTML = "skeet";
-      document.body.appendChild(pEl);
-      let count = 0;
-
-      window.skeetIt = function() {
-        console.log('skeetIt');
-        pEl.innerHTML = `skeet ${count}`;
-        count++;
-      }
-
-      // This function will be called by the screen saver on each animation frame
-      window.screenSaverTick = function(count) {
-          console.log('Screen saver tick: ' + count);
-          // You could update a counter on screen to visually confirm updates
-          if (document.getElementById('tickCounter')) {
-              document.getElementById('tickCounter').textContent = count;
-          }
-      };
-      
-      // Optional: Add a visual counter to your page
-      document.addEventListener('DOMContentLoaded', function() {
-          const counter = document.createElement('div');
-          counter.id = 'tickCounter';
-          counter.style.position = 'absolute';
-          counter.style.top = '10px';
-          counter.style.right = '10px';
-          counter.style.background = 'rgba(0,0,0,0.5)';
-          counter.style.color = 'white';
-          counter.style.padding = '5px';
-          counter.style.zIndex = '9999';
-          document.body.appendChild(counter);
-      });
-
-      // setInterval(function() {
-      //   window.skeetIt();
-      // }, 500);
-  </script>
   </body>
 </html>

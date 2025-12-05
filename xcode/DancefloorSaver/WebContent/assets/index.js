@@ -3664,9 +3664,43 @@ window.addEventListener("DOMContentLoaded", () => {
 }, false);
 let time = 0;
 
+// FPS tracking for JS layer
+let jsFrameCount = 0;
+let jsLastFPSTime = performance.now();
+let jsFPS = 0;
+
+// Create FPS display element
+const fpsDisplay = document.createElement('div');
+fpsDisplay.id = 'fps-display';
+fpsDisplay.style.cssText = `
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #0f0;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  z-index: 99999;
+  pointer-events: none;
+`;
+document.body.appendChild(fpsDisplay);
+
 // Tick function exposed to window for Swift screen saver to call directly
 // This renders one frame without scheduling the next (Swift drives the timing)
 window.tick = function() {
+  // FPS calculation
+  jsFrameCount++;
+  const now = performance.now();
+  const elapsed = now - jsLastFPSTime;
+  if (elapsed >= 1000) {
+    jsFPS = (jsFrameCount / elapsed) * 1000;
+    fpsDisplay.textContent = `JS FPS: ${jsFPS.toFixed(1)}`;
+    jsFrameCount = 0;
+    jsLastFPSTime = now;
+  }
+  
   time += 0.01;
   grainPass.uniforms.time.value = time;
   if (params.animateValues) {
