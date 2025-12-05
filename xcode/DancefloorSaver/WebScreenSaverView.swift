@@ -70,6 +70,10 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         webView.wantsLayer = true
         webView.layer?.backgroundColor = NSColor.black.cgColor
         webView.navigationDelegate = self
+        
+        // Prevent white flash on load - make WebView transparent so black layer shows through
+        webView.setValue(false, forKey: "drawsBackground")
+        
         addSubview(webView)
         
         // Create Swift FPS label (top-right corner)
