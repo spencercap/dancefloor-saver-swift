@@ -21,6 +21,23 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     private var swiftFPS: Double = 0
     private var swiftFPSLabel: NSTextField!
     
+    // Configuration
+    private var configSheet: NSWindow?
+    private var showFPSCheckbox: NSButton?
+    
+    // Defaults for preferences
+    private var defaults: ScreenSaverDefaults? {
+        return ScreenSaverDefaults(forModuleWithName: Bundle(for: type(of: self)).bundleIdentifier ?? "com.dancefloor.saver")
+    }
+    
+    private var showFPS: Bool {
+        get { defaults?.bool(forKey: "showFPS") ?? true }
+        set {
+            defaults?.set(newValue, forKey: "showFPS")
+            defaults?.synchronize()
+        }
+    }
+    
     override init?(frame: NSRect, isPreview: Bool) {
         super.init(frame: frame, isPreview: isPreview)
         print("WebScreenSaverView init")  // This won't show in Console.app
@@ -30,6 +47,8 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         
         // Basic setup
         animationTimeInterval = 1/60.0
+        // animationTimeInterval = 1/45.0
+        // animationTimeInterval = 1/30.0
 
         // more
         wantsLayer = true
@@ -68,6 +87,7 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
                                       y: frame.height - 30,
                                       width: 140,
                                       height: 20)
+        swiftFPSLabel.isHidden = !showFPS
         addSubview(swiftFPSLabel)
         
         // Add this debug content to test if WebView is working
@@ -143,9 +163,83 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         setNeedsDisplay(bounds)
     }
     
-    // Add this method to ensure the WebView stays active
+    // MARK: - Configuration Sheet
+    
     override var hasConfigureSheet: Bool {
-        return false
+        return true
+    }
+    
+    override var configureSheet: NSWindow? {
+        if configSheet == nil {
+            configSheet = createConfigSheet()
+        }
+        return configSheet
+    }
+    
+    private func createConfigSheet() -> NSWindow {
+        let sheet = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 120),
+            styleMask: [.titled],
+            backing: .buffered,
+            defer: false
+        )
+        sheet.title = "Dancefloor Saver Options"
+        
+        let contentView = NSView(frame: NSRect(x: 0, y: 0, width: 300, height: 120))
+        
+        // Show FPS checkbox
+        showFPSCheckbox = NSButton(checkboxWithTitle: "Show FPS Counters", target: self, action: #selector(fpsCheckboxChanged(_:)))
+        showFPSCheckbox?.frame = NSRect(x: 20, y: 70, width: 200, height: 20)
+        showFPSCheckbox?.state = showFPS ? .on : .off
+        contentView.addSubview(showFPSCheckbox!)
+        
+        // OK button
+        let okButton = NSButton(title: "OK", target: self, action: #selector(closeConfigSheet(_:)))
+        okButton.frame = NSRect(x: 200, y: 20, width: 80, height: 30)
+        okButton.bezelStyle = .rounded
+        okButton.keyEquivalent = "\r"
+        contentView.addSubview(okButton)
+        
+        // Cancel button
+        let cancelButton = NSButton(title: "Cancel", target: self, action: #selector(cancelConfigSheet(_:)))
+        cancelButton.frame = NSRect(x: 110, y: 20, width: 80, height: 30)
+        cancelButton.bezelStyle = .rounded
+        cancelButton.keyEquivalent = "\u{1b}"
+        contentView.addSubview(cancelButton)
+        
+        sheet.contentView = contentView
+        return sheet
+    }
+    
+    @objc private func fpsCheckboxChanged(_ sender: NSButton) {
+        // Just update the checkbox state, actual save happens on OK
+    }
+    
+    @objc private func closeConfigSheet(_ sender: NSButton) {
+        // Save the setting
+        showFPS = showFPSCheckbox?.state == .on
+        
+        // Apply to Swift label
+        swiftFPSLabel?.isHidden = !showFPS
+        
+        // Apply to JS FPS display via body class
+        let fpsClass = showFPS ? "fps-visible" : "fps-hidden"
+        webView?.evaluateJavaScript("document.body.classList.remove('fps-visible', 'fps-hidden'); document.body.classList.add('\(fpsClass)');", completionHandler: nil)
+        
+        // Close sheet
+        if let sheet = configSheet {
+            window?.endSheet(sheet)
+        }
+    }
+    
+    @objc private func cancelConfigSheet(_ sender: NSButton) {
+        // Reset checkbox to saved value
+        showFPSCheckbox?.state = showFPS ? .on : .off
+        
+        // Close sheet
+        if let sheet = configSheet {
+            window?.endSheet(sheet)
+        }
     }
     
     // This property helps prevent power-saving mode
@@ -153,18 +247,14 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         return false
     }
     
-    // Add these delegate methods
-    // func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    //     NSLog("WebView finished loading content")
-    //     // Inject a helper function that your web content can use
-    //     webView.evaluateJavaScript("""
-    //     window.screenSaverTick(); /*
-    //         window.screenSaverTick = function(count) {
-    //             // Your web content can implement this function to respond to animation frames
-    //             // console.log('Screen saver tick: ' + count);
-    //         }; */
-    //     """, completionHandler: nil)
-    // }
+    // MARK: - WKNavigationDelegate
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        NSLog("WebView finished loading content")
+        // Apply FPS visibility setting to JS via body class
+        let fpsClass = showFPS ? "fps-visible" : "fps-hidden"
+        webView.evaluateJavaScript("document.body.classList.remove('fps-visible', 'fps-hidden'); document.body.classList.add('\(fpsClass)');", completionHandler: nil)
+    }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         NSLog("WebView failed to load: \(error.localizedDescription)")
