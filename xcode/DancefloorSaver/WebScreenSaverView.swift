@@ -8,12 +8,74 @@
 import ScreenSaver
 import WebKit
 
+// MARK: - Shared WebView Manager
+// Single shared WebView to prevent multiple Web Content processes
+// WKWebView processes are managed by the system and hard to terminate,
+// so we use ONE WebView that persists and gets reused across all instances
+private class SharedWebViewManager {
+    static let shared = SharedWebViewManager()
+    
+    let webView: WKWebView
+    private let processPool = WKProcessPool()
+    var isContentLoaded = false
+    var currentOwner: WebScreenSaverView? // Track which view is currently using the webView
+    
+    private init() {
+        let config = WKWebViewConfiguration()
+        config.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
+        config.processPool = processPool
+        
+        // Use non-persistent data store to reduce memory
+        config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+        
+        let preferences = WKWebpagePreferences()
+        preferences.allowsContentJavaScript = true
+        config.defaultWebpagePreferences = preferences
+        config.mediaTypesRequiringUserActionForPlayback = []
+        
+        webView = WKWebView(frame: .zero, configuration: config)
+        webView.wantsLayer = true
+        webView.layer?.backgroundColor = NSColor.black.cgColor
+        webView.setValue(false, forKey: "drawsBackground")
+        
+        NSLog("SharedWebViewManager: Created shared WebView")
+    }
+    
+    func loadContentIfNeeded(bundle: Bundle) {
+        guard !isContentLoaded else { 
+            NSLog("SharedWebViewManager: Content already loaded, resuming")
+            webView.evaluateJavaScript("if (typeof window.resume === 'function') { window.resume(); }", completionHandler: nil)
+            return 
+        }
+        
+        if let htmlPath = bundle.path(forResource: "index", ofType: "html") {
+            let url = URL(fileURLWithPath: htmlPath)
+            webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+            isContentLoaded = true
+            NSLog("SharedWebViewManager: Loading content from \(htmlPath)")
+        } else {
+            NSLog("SharedWebViewManager: Failed to find index.html")
+            webView.loadHTMLString("<html><body style='background: red;'><h2>couldn't find local HTML</h2></body></html>", baseURL: nil)
+        }
+    }
+    
+    func pause() {
+        webView.evaluateJavaScript("if (typeof window.pause === 'function') { window.pause(); }", completionHandler: nil)
+        NSLog("SharedWebViewManager: Paused")
+    }
+    
+    func resume() {
+        webView.evaluateJavaScript("if (typeof window.resume === 'function') { window.resume(); }", completionHandler: nil)
+        NSLog("SharedWebViewManager: Resumed")
+    }
+}
+
 //@objc(WebScreenSaverView)
 class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
-    var webView: WKWebView?
-    
-    // Track cleanup state to avoid double cleanup
-    private var isCleanedUp: Bool = false
+    // Reference to the shared WebView (not owned by this instance)
+    private var webView: WKWebView? {
+        return SharedWebViewManager.shared.webView
+    }
     
     // Add this property at the class level
     private var startTime: Date?
@@ -43,42 +105,13 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     
     override init?(frame: NSRect, isPreview: Bool) {
         super.init(frame: frame, isPreview: isPreview)
-        print("WebScreenSaverView init")  // This won't show in Console.app
         
-        // Try using NSLog which will show in Console.app
-        NSLog("WebScreenSaverView initialized with frame: \(frame)")
+        NSLog("WebScreenSaverView initialized with frame: \(frame), isPreview: \(isPreview)")
         
         // Basic setup
         animationTimeInterval = 1/60.0
-        // animationTimeInterval = 1/45.0
-        // animationTimeInterval = 1/30.0
-
-        // more
         wantsLayer = true
-        layer?.backgroundColor = .black  // Add this to see the base layer
-        
-        let config = WKWebViewConfiguration()
-        config.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
-        
-        // Configure modern WebKit settings
-        let preferences = WKWebpagePreferences()
-        preferences.allowsContentJavaScript = true
-        config.defaultWebpagePreferences = preferences
-        
-        // Configure media autoplay without user interaction
-        config.mediaTypesRequiringUserActionForPlayback = []
-        
-        let wv = WKWebView(frame: self.bounds, configuration: config)
-        wv.autoresizingMask = [.width, .height]
-        wv.wantsLayer = true
-        wv.layer?.backgroundColor = NSColor.black.cgColor
-        wv.navigationDelegate = self
-        
-        // Prevent white flash on load - make WebView transparent so black layer shows through
-        wv.setValue(false, forKey: "drawsBackground")
-        
-        webView = wv
-        addSubview(wv)
+        layer?.backgroundColor = .black
         
         // Create Swift FPS label (top-right corner)
         swiftFPSLabel = NSTextField(labelWithString: "Swift FPS: --")
@@ -89,7 +122,7 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         swiftFPSLabel.isBezeled = false
         swiftFPSLabel.isEditable = false
         swiftFPSLabel.wantsLayer = true
-        swiftFPSLabel.layer?.zPosition = 1000  // Ensure it's on top
+        swiftFPSLabel.layer?.zPosition = 1000
         swiftFPSLabel.sizeToFit()
         swiftFPSLabel.frame = NSRect(x: frame.width - 150,
                                       y: frame.height - 30,
@@ -97,18 +130,6 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
                                       height: 20)
         swiftFPSLabel.isHidden = !showFPS
         addSubview(swiftFPSLabel)
-        
-        // Add this debug content to test if WebView is working
-        // webView.loadHTMLString("<html><body style='background: green;'><h1>bewm!</h1></body></html>", baseURL: nil)
-        
-        // from HTML file
-        if let htmlPath = Bundle(for: type(of: self)).path(forResource: "index", ofType: "html") {
-           let url = URL(fileURLWithPath: htmlPath)
-           wv.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
-        } else {
-            NSLog("Failed to find index.html")
-            wv.loadHTMLString("<html><body style='background: red;'><h2>couldnt find local HTML</h2></body></html>", baseURL: nil)
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -142,79 +163,80 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     override func startAnimation() {
         NSLog("startAnimation called")
         super.startAnimation()
-        // Set the start time when animation begins
+        
         startTime = Date()
+        
+        let manager = SharedWebViewManager.shared
+        
+        // Take ownership of the shared WebView
+        manager.currentOwner = self
+        
+        // Add the shared WebView to our view hierarchy
+        if let wv = webView {
+            wv.frame = self.bounds
+            wv.autoresizingMask = [.width, .height]
+            wv.navigationDelegate = self
+            
+            // Remove from previous superview if any
+            wv.removeFromSuperview()
+            addSubview(wv)
+            
+            // Ensure FPS label is on top
+            if let label = swiftFPSLabel {
+                label.removeFromSuperview()
+                addSubview(label, positioned: .above, relativeTo: wv)
+            }
+        }
+        
+        // Load content if needed, or resume if already loaded
+        manager.loadContentIfNeeded(bundle: Bundle(for: type(of: self)))
     }
     
     override func stopAnimation() {
         NSLog("stopAnimation called")
         super.stopAnimation()
         
-        // Clean up WebView to prevent memory leaks
-        cleanupWebView()
-    }
-    
-    private func cleanupWebView() {
-        guard !isCleanedUp, let wv = webView else { return }
-        isCleanedUp = true
+        let manager = SharedWebViewManager.shared
         
-        NSLog("Cleaning up WebView resources")
-        
-        // Stop any ongoing loading
-        wv.stopLoading()
-        
-        // Clear the navigation delegate to break retain cycle
-        wv.navigationDelegate = nil
-        
-        // Stop JavaScript execution and clear content
-        wv.evaluateJavaScript("if (typeof window.cleanup === 'function') { window.cleanup(); }", completionHandler: nil)
-        
-        // Load blank content to release WebGL/Three.js resources
-        wv.loadHTMLString("", baseURL: nil)
-        
-        // Aggressively clear WKWebView caches and data
-        let websiteDataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
-        let dateFrom = Date(timeIntervalSince1970: 0)
-        WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes, modifiedSince: dateFrom) {
-            NSLog("WebView data store cleared")
-        }
-        
-        // Remove from view hierarchy
-        wv.removeFromSuperview()
-        
-        // Clear the reference
-        webView = nil
-        
-        NSLog("WebView cleanup complete")
-    }
-    
-    // Additional lifecycle hooks for more aggressive cleanup
-    override func viewWillMove(toWindow newWindow: NSWindow?) {
-        super.viewWillMove(toWindow: newWindow)
-        // If moving to nil window, we're being removed - clean up
-        if newWindow == nil {
-            NSLog("View moving to nil window - triggering cleanup")
-            cleanupWebView()
+        // Only pause if we're the current owner
+        if manager.currentOwner === self {
+            manager.pause()
+            manager.currentOwner = nil
+            
+            // Remove webView from our hierarchy (but don't destroy it)
+            webView?.removeFromSuperview()
         }
     }
     
     override func removeFromSuperview() {
-        NSLog("removeFromSuperview called - triggering cleanup")
-        cleanupWebView()
+        NSLog("removeFromSuperview called")
+        
+        // Release ownership if we have it
+        if SharedWebViewManager.shared.currentOwner === self {
+            SharedWebViewManager.shared.pause()
+            SharedWebViewManager.shared.currentOwner = nil
+        }
+        
         super.removeFromSuperview()
     }
     
     deinit {
         NSLog("WebScreenSaverView deinit called")
-        cleanupWebView()
         
-        // Clean up config sheet
+        // Release ownership if we have it
+        if SharedWebViewManager.shared.currentOwner === self {
+            SharedWebViewManager.shared.pause()
+            SharedWebViewManager.shared.currentOwner = nil
+        }
+        
         configSheet = nil
     }
     
     override func animateOneFrame() {
-        // Skip if cleaned up
-        guard !isCleanedUp, webView != nil else { return }
+        // Skip if not animating or we're not the owner
+        guard isAnimating, 
+              SharedWebViewManager.shared.currentOwner === self,
+              webView != nil else { return }
         
         // FPS tracking for Swift layer
         swiftFrameCount += 1

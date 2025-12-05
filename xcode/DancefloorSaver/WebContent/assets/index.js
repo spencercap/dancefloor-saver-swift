@@ -3757,13 +3757,39 @@ window.tick = function() {
 }
 
 let animationFrameId = null;
+let isPaused = false;
 
 function animate() {
   animationFrameId = requestAnimationFrame(animate);
   window.tick();
 }
 
-// Cleanup function exposed to window for Swift screen saver to call on exit
+// Pause function - stops the animation loop but keeps resources intact for fast resume
+window.pause = function() {
+  if (isPaused) return;
+  isPaused = true;
+  console.log('Animation paused');
+  
+  // Cancel animation frame to stop rendering
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+};
+
+// Resume function - restarts the animation loop using existing resources
+window.resume = function() {
+  if (!isPaused) return;
+  isPaused = false;
+  console.log('Animation resumed');
+  
+  // Restart the animation loop
+  if (animationFrameId === null) {
+    animate();
+  }
+};
+
+// Cleanup function exposed to window for Swift screen saver to call on final exit
 // This properly disposes of Three.js resources to prevent memory leaks
 window.cleanup = function() {
   console.log('Cleanup called - disposing Three.js resources');
