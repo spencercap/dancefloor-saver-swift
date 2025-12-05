@@ -832,32 +832,32 @@ const CopyShader = {
     /* glsl */
     `
 
-        varying vec2 vUv;
+		varying vec2 vUv;
 
-        void main() {
+		void main() {
 
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-        }`
+		}`
   ),
   fragmentShader: (
     /* glsl */
     `
 
-        uniform float opacity;
+		uniform float opacity;
 
-        uniform sampler2D tDiffuse;
+		uniform sampler2D tDiffuse;
 
-        varying vec2 vUv;
+		varying vec2 vUv;
 
-        void main() {
+		void main() {
 
-            vec4 texel = texture2D( tDiffuse, vUv );
-            gl_FragColor = opacity * texel;
+			vec4 texel = texture2D( tDiffuse, vUv );
+			gl_FragColor = opacity * texel;
 
 
-        }`
+		}`
   )
 };
 class Pass {
@@ -1178,41 +1178,41 @@ const LuminosityHighPassShader = {
     /* glsl */
     `
 
-        varying vec2 vUv;
+		varying vec2 vUv;
 
-        void main() {
+		void main() {
 
-            vUv = uv;
+			vUv = uv;
 
-            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-        }`
+		}`
   ),
   fragmentShader: (
     /* glsl */
     `
 
-        uniform sampler2D tDiffuse;
-        uniform vec3 defaultColor;
-        uniform float defaultOpacity;
-        uniform float luminosityThreshold;
-        uniform float smoothWidth;
+		uniform sampler2D tDiffuse;
+		uniform vec3 defaultColor;
+		uniform float defaultOpacity;
+		uniform float luminosityThreshold;
+		uniform float smoothWidth;
 
-        varying vec2 vUv;
+		varying vec2 vUv;
 
-        void main() {
+		void main() {
 
-            vec4 texel = texture2D( tDiffuse, vUv );
+			vec4 texel = texture2D( tDiffuse, vUv );
 
-            float v = luminance( texel.xyz );
+			float v = luminance( texel.xyz );
 
-            vec4 outputColor = vec4( defaultColor.rgb, defaultOpacity );
+			vec4 outputColor = vec4( defaultColor.rgb, defaultOpacity );
 
-            float alpha = smoothstep( luminosityThreshold, luminosityThreshold + smoothWidth, v );
+			float alpha = smoothstep( luminosityThreshold, luminosityThreshold + smoothWidth, v );
 
-            gl_FragColor = mix( outputColor, texel, alpha );
+			gl_FragColor = mix( outputColor, texel, alpha );
 
-        }`
+		}`
   )
 };
 class UnrealBloomPass extends Pass {
@@ -1393,31 +1393,31 @@ class UnrealBloomPass extends Pass {
         // precomputed Gaussian coefficients
       },
       vertexShader: `varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-                }`,
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+				}`,
       fragmentShader: `#include <common>
-                varying vec2 vUv;
-                uniform sampler2D colorTexture;
-                uniform vec2 invSize;
-                uniform vec2 direction;
-                uniform float gaussianCoefficients[KERNEL_RADIUS];
+				varying vec2 vUv;
+				uniform sampler2D colorTexture;
+				uniform vec2 invSize;
+				uniform vec2 direction;
+				uniform float gaussianCoefficients[KERNEL_RADIUS];
 
-                void main() {
-                    float weightSum = gaussianCoefficients[0];
-                    vec3 diffuseSum = texture2D( colorTexture, vUv ).rgb * weightSum;
-                    for( int i = 1; i < KERNEL_RADIUS; i ++ ) {
-                        float x = float(i);
-                        float w = gaussianCoefficients[i];
-                        vec2 uvOffset = direction * invSize * x;
-                        vec3 sample1 = texture2D( colorTexture, vUv + uvOffset ).rgb;
-                        vec3 sample2 = texture2D( colorTexture, vUv - uvOffset ).rgb;
-                        diffuseSum += (sample1 + sample2) * w;
-                        weightSum += 2.0 * w;
-                    }
-                    gl_FragColor = vec4(diffuseSum/weightSum, 1.0);
-                }`
+				void main() {
+					float weightSum = gaussianCoefficients[0];
+					vec3 diffuseSum = texture2D( colorTexture, vUv ).rgb * weightSum;
+					for( int i = 1; i < KERNEL_RADIUS; i ++ ) {
+						float x = float(i);
+						float w = gaussianCoefficients[i];
+						vec2 uvOffset = direction * invSize * x;
+						vec3 sample1 = texture2D( colorTexture, vUv + uvOffset ).rgb;
+						vec3 sample2 = texture2D( colorTexture, vUv - uvOffset ).rgb;
+						diffuseSum += (sample1 + sample2) * w;
+						weightSum += 2.0 * w;
+					}
+					gl_FragColor = vec4(diffuseSum/weightSum, 1.0);
+				}`
     });
   }
   getCompositeMaterial(nMips) {
@@ -1437,33 +1437,33 @@ class UnrealBloomPass extends Pass {
         "bloomRadius": { value: 0 }
       },
       vertexShader: `varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-                }`,
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+				}`,
       fragmentShader: `varying vec2 vUv;
-                uniform sampler2D blurTexture1;
-                uniform sampler2D blurTexture2;
-                uniform sampler2D blurTexture3;
-                uniform sampler2D blurTexture4;
-                uniform sampler2D blurTexture5;
-                uniform float bloomStrength;
-                uniform float bloomRadius;
-                uniform float bloomFactors[NUM_MIPS];
-                uniform vec3 bloomTintColors[NUM_MIPS];
+				uniform sampler2D blurTexture1;
+				uniform sampler2D blurTexture2;
+				uniform sampler2D blurTexture3;
+				uniform sampler2D blurTexture4;
+				uniform sampler2D blurTexture5;
+				uniform float bloomStrength;
+				uniform float bloomRadius;
+				uniform float bloomFactors[NUM_MIPS];
+				uniform vec3 bloomTintColors[NUM_MIPS];
 
-                float lerpBloomFactor(const in float factor) {
-                    float mirrorFactor = 1.2 - factor;
-                    return mix(factor, mirrorFactor, bloomRadius);
-                }
+				float lerpBloomFactor(const in float factor) {
+					float mirrorFactor = 1.2 - factor;
+					return mix(factor, mirrorFactor, bloomRadius);
+				}
 
-                void main() {
-                    gl_FragColor = bloomStrength * ( lerpBloomFactor(bloomFactors[0]) * vec4(bloomTintColors[0], 1.0) * texture2D(blurTexture1, vUv) +
-                        lerpBloomFactor(bloomFactors[1]) * vec4(bloomTintColors[1], 1.0) * texture2D(blurTexture2, vUv) +
-                        lerpBloomFactor(bloomFactors[2]) * vec4(bloomTintColors[2], 1.0) * texture2D(blurTexture3, vUv) +
-                        lerpBloomFactor(bloomFactors[3]) * vec4(bloomTintColors[3], 1.0) * texture2D(blurTexture4, vUv) +
-                        lerpBloomFactor(bloomFactors[4]) * vec4(bloomTintColors[4], 1.0) * texture2D(blurTexture5, vUv) );
-                }`
+				void main() {
+					gl_FragColor = bloomStrength * ( lerpBloomFactor(bloomFactors[0]) * vec4(bloomTintColors[0], 1.0) * texture2D(blurTexture1, vUv) +
+						lerpBloomFactor(bloomFactors[1]) * vec4(bloomTintColors[1], 1.0) * texture2D(blurTexture2, vUv) +
+						lerpBloomFactor(bloomFactors[2]) * vec4(bloomTintColors[2], 1.0) * texture2D(blurTexture3, vUv) +
+						lerpBloomFactor(bloomFactors[3]) * vec4(bloomTintColors[3], 1.0) * texture2D(blurTexture4, vUv) +
+						lerpBloomFactor(bloomFactors[4]) * vec4(bloomTintColors[4], 1.0) * texture2D(blurTexture5, vUv) );
+				}`
     });
   }
 }
@@ -3342,6 +3342,19 @@ const cameraZoomRange = {
   speed: -0.2
   // Controls oscillation speed
 };
+const mouseHueInfluence = {
+  value: 0,
+  strength: 0.15
+  // How much mouse position affects the hue
+};
+const mouseCameraInfluence = {
+  value: 0,
+  strength: 7
+  // How many units the mouse can move the camera
+};
+const initialHue = Date.now() % 1e3 / 1e3;
+const initialColor = new THREE.Color();
+initialColor.setHSL(initialHue, 1, 0.5);
 const params = {
   a: Math.floor(Math.random() * 10) + 1,
   // random btwn 10
@@ -3355,7 +3368,8 @@ const params = {
   tubeRadius: 0.2,
   radialSegments: 8,
   // color: 0xff0000,
-  color: 12844803,
+  color: initialColor.getHex(),
+  // Convert HSL color to hex
   pixelSize: 40,
   // Pixel size for shader
   bloomStrength: 1.5,
@@ -3484,25 +3498,25 @@ const PixelationShader = {
     // Pixel size for effect
   },
   vertexShader: `
-                            varying vec2 vUv;
-                            void main() {
-                                    vUv = uv;
-                                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                            }
-                    `,
+							varying vec2 vUv;
+							void main() {
+									vUv = uv;
+									gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+							}
+					`,
   fragmentShader: `
-                            uniform sampler2D tDiffuse;
-                            uniform vec2 resolution;
-                            uniform float pixelSize;
+							uniform sampler2D tDiffuse;
+							uniform vec2 resolution;
+							uniform float pixelSize;
 
-                            varying vec2 vUv;
+							varying vec2 vUv;
 
-                            void main() {
-                                    vec2 dxy = pixelSize / resolution;
-                                    vec2 coord = dxy * floor(vUv / dxy);
-                                    gl_FragColor = texture2D(tDiffuse, coord);
-                            }
-                    `
+							void main() {
+									vec2 dxy = pixelSize / resolution;
+									vec2 coord = dxy * floor(vUv / dxy);
+									gl_FragColor = texture2D(tDiffuse, coord);
+							}
+					`
 };
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
@@ -3530,8 +3544,8 @@ const GrainShader = {
   vertexShader: `
 varying vec2 vUv;
 void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `,
   fragmentShader: `
@@ -3542,15 +3556,15 @@ uniform float time;
 varying vec2 vUv;
 
 float random(vec2 co) {
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
 void main() {
-    vec4 color = texture2D(tDiffuse, vUv);
-    vec2 uvRandom = vUv;
-    uvRandom.y *= random(vec2(uvRandom.y, time * speed));
-    color.rgb += amount * (random(uvRandom) - 0.5);
-    gl_FragColor = color;
+	vec4 color = texture2D(tDiffuse, vUv);
+	vec2 uvRandom = vUv;
+	uvRandom.y *= random(vec2(uvRandom.y, time * speed));
+	color.rgb += amount * (random(uvRandom) - 0.5);
+	gl_FragColor = color;
 }
 `
 };
@@ -3558,8 +3572,8 @@ const grainPass = new ShaderPass(GrainShader);
 composer.addPass(grainPass);
 grainPass.uniforms.amount.value = params.grainAmount;
 grainPass.uniforms.speed.value = params.grainSpeed;
-// const parentElement = document.querySelector(".bodyreal");
-const parentElement = document.body;
+const parentElement = document.querySelector(".bodyreal") || document.body;
+console.log("parentElement", parentElement);
 let gui;
 gui = new GUI();
 const guiElement = gui.domElement;
@@ -3662,6 +3676,22 @@ window.addEventListener("DOMContentLoaded", () => {
   params.pixelSize = pxVal;
   pixelPass.uniforms["pixelSize"].value = pxVal;
 }, false);
+
+
+function updateFromPointer(x, y) {
+  mouseHueInfluence.value = (x / window.innerWidth * 2 - 1) * mouseHueInfluence.strength;
+  mouseCameraInfluence.value = (y / window.innerHeight * 2 - 1) * mouseCameraInfluence.strength;
+}
+window.addEventListener("mousemove", (event) => {
+  updateFromPointer(event.clientX, event.clientY);
+});
+window.addEventListener("touchmove", (event) => {
+  if (event.touches.length > 0) {
+    updateFromPointer(event.touches[0].clientX, event.touches[0].clientY);
+  }
+});
+
+
 let time = 0;
 
 // FPS tracking for JS layer
@@ -3700,13 +3730,13 @@ window.tick = function() {
     jsFrameCount = 0;
     jsLastFPSTime = now;
   }
-  
+
   time += 0.01;
   grainPass.uniforms.time.value = time;
   if (params.animateValues) {
     params.tubeRadius = tubeRadiusRange.min + (Math.sin(time * tubeRadiusRange.speed) + 1) * 0.5 * (tubeRadiusRange.max - tubeRadiusRange.min);
     updateTubeRadiusGUI();
-    const hue = time * colorRange.speed % 1;
+    const hue = (initialHue + time * colorRange.speed + mouseHueInfluence.value) % 1;
     const color = new THREE.Color();
     color.setHSL(hue, 1, 0.5);
     params.color = color.getHex();
@@ -3714,7 +3744,9 @@ window.tick = function() {
     params.bloomStrength = bloomStrengthRange.min + (Math.sin(time * bloomStrengthRange.speed) + 1) * 0.5 * (bloomStrengthRange.max - bloomStrengthRange.min);
     bloomPass.strength = params.bloomStrength;
     updateBloomStrengthGUI();
-    params.cameraDistance = cameraZoomRange.min + (Math.sin((time + 4) * cameraZoomRange.speed) + 1) * 0.5 * (cameraZoomRange.max - cameraZoomRange.min);
+    const oscillation = (Math.sin((time + 4) * cameraZoomRange.speed) + 1) * 0.5;
+    const baseDistance = cameraZoomRange.min + oscillation * (cameraZoomRange.max - cameraZoomRange.min);
+    params.cameraDistance = baseDistance + mouseCameraInfluence.value;
     camera.position.z = params.cameraDistance;
     updateCameraZoomGUI();
   }
@@ -3722,7 +3754,7 @@ window.tick = function() {
   tubeMesh.rotation.x += 5e-3;
   tubeMesh.rotation.y += 0.01;
   composer.render();
-};
+}
 
 function animate() {
   requestAnimationFrame(animate);
