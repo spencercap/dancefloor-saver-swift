@@ -87,79 +87,11 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     }
     
     override func animateOneFrame() {
-        // Use a more robust JavaScript to keep the WebView active and specifically target Canvas animations
-        webView.evaluateJavaScript("""
-            window.skeetIt();
-
-            // Basic tick counter
-            if (window.screenSaverTickCount === undefined) { 
-                window.screenSaverTickCount = 0; 
-            }
-            window.screenSaverTickCount++;
-            
-            // Call any custom tick handler
-            if (typeof window.screenSaverTick === 'function') {
-                window.screenSaverTick(window.screenSaverTickCount);
-            }
-
-            // Force Canvas redraw - this is critical for Canvas animations
-            const canvases = document.getElementsByTagName('canvas');
-            for (let i = 0; i < canvases.length; i++) {
-                const canvas = canvases[i];
-                const ctx = canvas.getContext('2d') || canvas.getContext('webgl') || canvas.getContext('webgl2');
-                if (ctx) {
-                    // For 2D canvas
-                    if (ctx.getImageData) {
-                        // Force a read/write operation on the canvas
-                        const imageData = ctx.getImageData(0, 0, 1, 1);
-                        ctx.putImageData(imageData, 0, 0);
-                    }
-                    
-                    // For WebGL canvas
-                    if (ctx.flush) {
-                        ctx.flush();
-                    }
-                    
-                    // Add a tiny transformation to force a redraw
-                    if (ctx.save && ctx.restore) {
-                        ctx.save();
-                        ctx.restore();
-                    }
-                }
-                
-                // Force a style change to trigger a repaint
-                const currentWidth = canvas.width;
-                canvas.width = currentWidth;
-            }
-            
-            
-            // Ensure animation frames continue to be requested
-            if (window.requestAnimationFrame) {
-                window.requestAnimationFrame(function() {
-                    // This keeps the animation loop active
-                    // For Three.js specifically
-                    if (window.renderer && typeof window.renderer.render === 'function') {
-                        window.renderer.render(window.scene, window.camera);
-                    }
-                });
-            }
-            
-            // Force any animation loops to continue
-            if (typeof window.animate === 'function') {
-                window.animate();
-            }
-            
-            // Force a repaint of the entire document
-            document.body.style.minHeight = (document.body.scrollHeight + 0.1) + 'px';
-            document.body.style.minHeight = document.body.scrollHeight + 'px';
-            
-            // Add a timestamp to force DOM updates
-            document.body.setAttribute('data-timestamp', Date.now().toString());
-            
-            true;
-        """, completionHandler: nil)
+        // Call the exposed tick function directly - this renders one frame of the Three.js scene
+        // The tick function is exposed on window in index.html and handles all animation logic
+        webView.evaluateJavaScript("if (typeof window.tick === 'function') { window.tick(); }", completionHandler: nil)
         
-        // This is still needed to refresh the screen saver view itself
+        // Refresh the screen saver view
         setNeedsDisplay(bounds)
     }
     
