@@ -1,6 +1,15 @@
 # dancefloor saver 🪩
 <img width="975" height="547" alt="Screenshot 2025-12-05 at 09 35 58" src="https://github.com/user-attachments/assets/c153c414-15ec-4e7e-a906-1a60e788f6a4" />
 
+## simple install 
+
+```bash
+curl -L "https://github.com/user-attachments/files/23969186/DancefloorSaver.saver.zip" -o /tmp/DancefloorSaver.saver.zip && \
+unzip -q /tmp/DancefloorSaver.saver.zip -d /tmp && \
+mv /tmp/DancefloorSaver.saver ~/Library/Screen\ Savers/
+```
+> NOTE: will need to approve 'untrusted' developer as without macos signing 
+
 ## building + installing
 
 1. run `./build-src-e-install.sh` script from cli
