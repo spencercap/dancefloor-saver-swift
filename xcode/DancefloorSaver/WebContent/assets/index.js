@@ -3663,8 +3663,10 @@ window.addEventListener("DOMContentLoaded", () => {
   pixelPass.uniforms["pixelSize"].value = pxVal;
 }, false);
 let time = 0;
-function animate() {
-  requestAnimationFrame(animate);
+
+// Tick function exposed to window for Swift screen saver to call directly
+// This renders one frame without scheduling the next (Swift drives the timing)
+window.tick = function() {
   time += 0.01;
   grainPass.uniforms.time.value = time;
   if (params.animateValues) {
@@ -3686,5 +3688,10 @@ function animate() {
   tubeMesh.rotation.x += 5e-3;
   tubeMesh.rotation.y += 0.01;
   composer.render();
+};
+
+function animate() {
+  requestAnimationFrame(animate);
+  window.tick();
 }
 animate();
