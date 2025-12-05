@@ -4,11 +4,19 @@
 ## simple install 
 
 ```bash
-curl -L "https://github.com/user-attachments/files/23969186/DancefloorSaver.saver.zip" -o /tmp/DancefloorSaver.saver.zip && \
+curl -L "https://github.com/user-attachments/files/23970855/DancefloorSaver-v0.0.3.saver.zip" -o /tmp/DancefloorSaver.saver.zip && \
 unzip -q /tmp/DancefloorSaver.saver.zip -d /tmp && \
 mv /tmp/DancefloorSaver.saver ~/Library/Screen\ Savers/
 ```
-> NOTE: will need to approve 'untrusted' developer as without macos signing 
+
+or...
+
+[Download](https://github.com/user-attachments/files/23970855/DancefloorSaver-v0.0.3.saver.zip) and move to `~/Library/Screen\ Savers`
+
+> NOTE: will need to approve 'untrusted' developer as without paid macos 'developer' signing (me)
+> HOW? Go to System Settings > Privacy > in Security area, click Open Anyway
+> ![allow-any-developers](https://github.com/user-attachments/assets/9bfbe7d5-8a9b-4fff-841f-7688fa63c677)
+
 
 ## building + installing
 
