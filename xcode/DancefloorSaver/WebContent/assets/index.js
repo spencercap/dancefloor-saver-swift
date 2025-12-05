@@ -3756,8 +3756,66 @@ window.tick = function() {
   composer.render();
 }
 
+let animationFrameId = null;
+
 function animate() {
-  requestAnimationFrame(animate);
+  animationFrameId = requestAnimationFrame(animate);
   window.tick();
 }
+
+// Cleanup function exposed to window for Swift screen saver to call on exit
+// This properly disposes of Three.js resources to prevent memory leaks
+window.cleanup = function() {
+  console.log('Cleanup called - disposing Three.js resources');
+  
+  // Cancel animation frame
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+  
+  // Dispose of composer passes
+  if (composer) {
+    composer.passes.forEach(pass => {
+      if (pass.dispose) pass.dispose();
+    });
+  }
+  
+  // Dispose of scene objects
+  if (scene) {
+    scene.traverse((object) => {
+      if (object.geometry) {
+        object.geometry.dispose();
+      }
+      if (object.material) {
+        if (Array.isArray(object.material)) {
+          object.material.forEach(material => material.dispose());
+        } else {
+          object.material.dispose();
+        }
+      }
+      if (object.texture) {
+        object.texture.dispose();
+      }
+    });
+    scene.clear();
+  }
+  
+  // Dispose of renderer
+  if (renderer) {
+    renderer.dispose();
+    renderer.forceContextLoss();
+    if (renderer.domElement && renderer.domElement.parentNode) {
+      renderer.domElement.parentNode.removeChild(renderer.domElement);
+    }
+  }
+  
+  // Dispose of controls
+  if (controls) {
+    controls.dispose();
+  }
+  
+  console.log('Cleanup complete');
+};
+
 animate();

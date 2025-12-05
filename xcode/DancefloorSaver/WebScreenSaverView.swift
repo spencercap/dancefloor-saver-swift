@@ -10,7 +10,10 @@ import WebKit
 
 //@objc(WebScreenSaverView)
 class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
-    var webView: WKWebView!
+    var webView: WKWebView?
+    
+    // Track cleanup state to avoid double cleanup
+    private var isCleanedUp: Bool = false
     
     // Add this property at the class level
     private var startTime: Date?
@@ -65,16 +68,17 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         // Configure media autoplay without user interaction
         config.mediaTypesRequiringUserActionForPlayback = []
         
-        webView = WKWebView(frame: self.bounds, configuration: config)
-        webView.autoresizingMask = [.width, .height]
-        webView.wantsLayer = true
-        webView.layer?.backgroundColor = NSColor.black.cgColor
-        webView.navigationDelegate = self
+        let wv = WKWebView(frame: self.bounds, configuration: config)
+        wv.autoresizingMask = [.width, .height]
+        wv.wantsLayer = true
+        wv.layer?.backgroundColor = NSColor.black.cgColor
+        wv.navigationDelegate = self
         
         // Prevent white flash on load - make WebView transparent so black layer shows through
-        webView.setValue(false, forKey: "drawsBackground")
+        wv.setValue(false, forKey: "drawsBackground")
         
-        addSubview(webView)
+        webView = wv
+        addSubview(wv)
         
         // Create Swift FPS label (top-right corner)
         swiftFPSLabel = NSTextField(labelWithString: "Swift FPS: --")
@@ -100,10 +104,10 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         // from HTML file
         if let htmlPath = Bundle(for: type(of: self)).path(forResource: "index", ofType: "html") {
            let url = URL(fileURLWithPath: htmlPath)
-           webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+           wv.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         } else {
             NSLog("Failed to find index.html")
-            webView.loadHTMLString("<html><body style='background: red;'><h2>couldnt find local HTML</h2></body></html>", baseURL: nil)
+            wv.loadHTMLString("<html><body style='background: red;'><h2>couldnt find local HTML</h2></body></html>", baseURL: nil)
         }
     }
     
@@ -114,14 +118,14 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     override func layout() {
         super.layout()
         // Reposition FPS label when view resizes (e.g., going fullscreen)
-        if swiftFPSLabel != nil {
-            swiftFPSLabel.frame = NSRect(x: bounds.width - 150,
-                                          y: bounds.height - 30,
-                                          width: 140,
-                                          height: 20)
+        if let label = swiftFPSLabel {
+            label.frame = NSRect(x: bounds.width - 150,
+                                  y: bounds.height - 30,
+                                  width: 140,
+                                  height: 20)
             // Bring label to front by re-adding it
-            swiftFPSLabel.removeFromSuperview()
-            addSubview(swiftFPSLabel, positioned: .above, relativeTo: webView)
+            label.removeFromSuperview()
+            addSubview(label, positioned: .above, relativeTo: webView)
         }
     }
     
@@ -132,7 +136,7 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         NSColor.black.setFill()
         bounds.fill()
 
-        webView.setNeedsDisplay(rect)
+        webView?.setNeedsDisplay(rect)
     }
     
     override func startAnimation() {
@@ -145,9 +149,73 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
     override func stopAnimation() {
         NSLog("stopAnimation called")
         super.stopAnimation()
+        
+        // Clean up WebView to prevent memory leaks
+        cleanupWebView()
+    }
+    
+    private func cleanupWebView() {
+        guard !isCleanedUp, let wv = webView else { return }
+        isCleanedUp = true
+        
+        NSLog("Cleaning up WebView resources")
+        
+        // Stop any ongoing loading
+        wv.stopLoading()
+        
+        // Clear the navigation delegate to break retain cycle
+        wv.navigationDelegate = nil
+        
+        // Stop JavaScript execution and clear content
+        wv.evaluateJavaScript("if (typeof window.cleanup === 'function') { window.cleanup(); }", completionHandler: nil)
+        
+        // Load blank content to release WebGL/Three.js resources
+        wv.loadHTMLString("", baseURL: nil)
+        
+        // Aggressively clear WKWebView caches and data
+        let websiteDataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+        let dateFrom = Date(timeIntervalSince1970: 0)
+        WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes, modifiedSince: dateFrom) {
+            NSLog("WebView data store cleared")
+        }
+        
+        // Remove from view hierarchy
+        wv.removeFromSuperview()
+        
+        // Clear the reference
+        webView = nil
+        
+        NSLog("WebView cleanup complete")
+    }
+    
+    // Additional lifecycle hooks for more aggressive cleanup
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        super.viewWillMove(toWindow: newWindow)
+        // If moving to nil window, we're being removed - clean up
+        if newWindow == nil {
+            NSLog("View moving to nil window - triggering cleanup")
+            cleanupWebView()
+        }
+    }
+    
+    override func removeFromSuperview() {
+        NSLog("removeFromSuperview called - triggering cleanup")
+        cleanupWebView()
+        super.removeFromSuperview()
+    }
+    
+    deinit {
+        NSLog("WebScreenSaverView deinit called")
+        cleanupWebView()
+        
+        // Clean up config sheet
+        configSheet = nil
     }
     
     override func animateOneFrame() {
+        // Skip if cleaned up
+        guard !isCleanedUp, webView != nil else { return }
+        
         // FPS tracking for Swift layer
         swiftFrameCount += 1
         let now = Date()
@@ -161,7 +229,7 @@ class WebScreenSaverView: ScreenSaverView, WKNavigationDelegate {
         
         // Call the exposed tick function directly - this renders one frame of the Three.js scene
         // The tick function is exposed on window in index.html and handles all animation logic
-        webView.evaluateJavaScript("if (typeof window.tick === 'function') { window.tick(); }", completionHandler: nil)
+        webView?.evaluateJavaScript("if (typeof window.tick === 'function') { window.tick(); }", completionHandler: nil)
         
         // Refresh the screen saver view
         setNeedsDisplay(bounds)
